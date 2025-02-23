@@ -19,3 +19,10 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.bg-weather {
+  background-image: url('/images/weather.webp'); /* Direct path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

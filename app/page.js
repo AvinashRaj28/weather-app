@@ -1,101 +1,122 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import axios from "axios";
+import { BsSearch } from "react-icons/bs";
+import { motion } from "framer-motion";
+import Navbar from "./components/Navbar";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [city, setCity] = useState("");
+  const [weather, setWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const API_KEY = process.env.NEXT_PUBLIC_WEATHER_KEY;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const fetchWeather = async (e) => {
+    e.preventDefault();
+
+    if (!city.trim()) {
+      alert("Please enter a city name!");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
+      const res = await axios.get(url);
+      setWeather(res.data);
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+      alert("Failed to fetch weather data. Please try again.");
+    }
+
+    setLoading(false);
+    setCity("");
+  };
+
+  return (
+    <div className="bg-weather min-h-screen flex flex-col items-center">
+      <Navbar />
+
+      <motion.div
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, ease: "easeOut" }}
+        className="w-full max-w-md mt-10 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-6 shadow-lg text-center"
+      >
+        <h1 className="text-4xl font-extrabold text-white mb-4 drop-shadow-md">
+          
+        </h1>
+
+        {/* Search Input */}
+        <form
+          onSubmit={fetchWeather}
+          className="flex items-center bg-white text-black rounded-lg overflow-hidden shadow-md"
+        >
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Enter city name"
+            className="px-4 py-3 w-full text-lg outline-none border-none"
+          />
+          <button type="submit" className="bg-blue-500 p-3 mr-1 text-white">
+            <BsSearch size={22} />
+          </button>
+        </form>
+
+        {/* Loading Animation */}
+        {loading && (
+          <motion.p
+            className="text-white mt-4 animate-pulse text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, repeat: Infinity }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Loading...
+          </motion.p>
+        )}
+
+        {/* Weather Data */}
+        {weather && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="mt-6 text-white"
           >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+            <h2 className="text-3xl font-bold tracking-wide">
+              📍 {weather.name}, {weather.sys.country}
+            </h2>
+            <p className="text-4xl font-bold text-blue-300 mt-2">
+              🌡️ {weather.main.temp}°C
+            </p>
+            <p className="text-lg italic opacity-80">
+              🤔 Feels Like: {weather.main.feels_like}°C
+            </p>
+
+            {/* Grid Layout for Extra Info */}
+            <div className="grid grid-cols-2 gap-4 mt-4 text-lg">
+              <p>💨 Wind: <span className="font-semibold">{weather.wind.speed} m/s</span></p>
+              <p>🌍 Humidity: <span className="font-semibold">{weather.main.humidity}%</span></p>
+              <p>📏 Pressure: <span className="font-semibold">{weather.main.pressure} hPa</span></p>
+              <p>🔆 Visibility: <span className="font-semibold">{weather.visibility} meters</span></p>
+            </div>
+
+            {/* Sunrise & Sunset */}
+            <div className="mt-4 flex justify-center gap-6 text-lg">
+              <p>🌅 Sunrise: <span className="font-semibold">{new Date(weather.sys.sunrise * 1000).toLocaleTimeString()}</span></p>
+              <p>🌇 Sunset: <span className="font-semibold">{new Date(weather.sys.sunset * 1000).toLocaleTimeString()}</span></p>
+            </div>
+
+            {/* Weather Condition */}
+            <p className="mt-4 text-lg font-semibold capitalize">
+              🌤️ Condition: <span className="text-xl font-bold text-yellow-300">{weather.weather[0].description}</span>
+            </p>
+          </motion.div>
+        )}
+      </motion.div>
     </div>
   );
 }
