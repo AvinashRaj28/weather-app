@@ -21,7 +21,7 @@ body {
 }
 
 .bg-weather {
-  background-image: url('/weather-app/images/weather.webp'); /* Updated path */
+  background-image: url('https://avinashraj28.github.io/weather-app/images/weather.webp'); /* Updated path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
