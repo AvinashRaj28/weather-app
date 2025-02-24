@@ -21,8 +21,9 @@ body {
 }
 
 .bg-weather {
-  background-image: url('/images/weather.webp'); /* Direct path */
+  background-image: url('/weather-app/images/weather.webp'); /* Updated path */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
+
