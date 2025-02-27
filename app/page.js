@@ -9,6 +9,7 @@ import Navbar from "./components/Navbar";
 export default function Home() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
+  const [aiResponse, setAiResponse] = useState("");
   const [loading, setLoading] = useState(false);
   const API_KEY = process.env.NEXT_PUBLIC_WEATHER_KEY;
 
@@ -26,6 +27,7 @@ export default function Home() {
       const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`;
       const res = await axios.get(url);
       setWeather(res.data);
+      getAiWeatherAdvice(res.data); // Call AI API for insights
     } catch (error) {
       console.error("Error fetching weather data:", error);
       alert("Failed to fetch weather data. Please try again.");
@@ -33,6 +35,23 @@ export default function Home() {
 
     setLoading(false);
     setCity("");
+  };
+
+  // ✅ AI Weather Advice Function
+  const getAiWeatherAdvice = async (weatherData) => {
+    try {
+      console.log("Sending weather data:", weatherData); // Debugging line
+
+      const res = await axios.post("/api/huggingface", {
+        city: weatherData.name,
+        weather: weatherData,
+      });
+
+      setAiResponse(res.data.response);
+    } catch (error) {
+      console.error("Error fetching AI response:", error);
+      setAiResponse("Couldn't get AI insights. Try again later.");
+    }
   };
 
   return (
@@ -46,7 +65,7 @@ export default function Home() {
         className="w-full max-w-md mt-10 bg-white bg-opacity-20 backdrop-blur-lg rounded-lg p-6 shadow-lg text-center"
       >
         <h1 className="text-4xl font-extrabold text-white mb-4 drop-shadow-md">
-          
+          Weather AI 🌤️
         </h1>
 
         {/* Search Input */}
@@ -114,6 +133,19 @@ export default function Home() {
             <p className="mt-4 text-lg font-semibold capitalize">
               🌤️ Condition: <span className="text-xl font-bold text-yellow-300">{weather.weather[0].description}</span>
             </p>
+
+            {/* AI Weather Advice */}
+            {aiResponse && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+                className="mt-6 p-4 bg-blue-500 text-white rounded-lg shadow-lg"
+              >
+                <h3 className="text-xl font-semibold">🌟 AI Weather Insight</h3>
+                <p className="mt-2">{aiResponse}</p>
+              </motion.div>
+            )}
           </motion.div>
         )}
       </motion.div>
