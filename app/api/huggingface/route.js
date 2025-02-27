@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // Ensure API route is dynamic
+
 import { HfInference } from "@huggingface/inference";
 
 const hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
