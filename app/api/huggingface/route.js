@@ -7,7 +7,10 @@ export async function POST(req) {
     const { city, weather } = await req.json();
 
     if (!city || !weather) {
-      return new Response(JSON.stringify({ error: "City and weather data are required" }), { status: 400 });
+      return new Response(JSON.stringify({ error: "City and weather data are required" }), { 
+        status: 400, 
+        headers: { "Content-Type": "application/json" } 
+      });
     }
 
     const prompt = `The weather in ${city} is ${weather.weather[0].description} with a temperature of ${weather.main.temp}°C. It feels like ${weather.main.feels_like}°C. The humidity is ${weather.main.humidity}%, and the wind speed is ${weather.wind.speed} m/s. What advice do you have for someone in this weather?`;
@@ -21,10 +24,24 @@ export async function POST(req) {
     // Extract only the generated response
     const aiResponse = response.generated_text.replace(prompt, "").trim();
 
-    return new Response(JSON.stringify({ response: aiResponse }), { status: 200 });
+    return new Response(JSON.stringify({ response: aiResponse }), { 
+      status: 200, 
+      headers: { "Content-Type": "application/json" } 
+    });
 
   } catch (error) {
     console.error("❌ AI API Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to fetch AI response" }), { status: 500 });
+    return new Response(JSON.stringify({ error: "Failed to fetch AI response" }), { 
+      status: 500, 
+      headers: { "Content-Type": "application/json" } 
+    });
   }
+}
+
+// ✅ Fix 405 by adding a GET handler
+export function GET() {
+  return new Response(JSON.stringify({ error: "Use POST method" }), { 
+    status: 405, 
+    headers: { "Content-Type": "application/json" } 
+  });
 }
